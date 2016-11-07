@@ -1,5 +1,5 @@
 #!/bin/bash
-# skrypt usuwa plik /etc/pacman.d/mirrorlist i generuje nowy z pliku /etc/pacman.d/mirrorlist.pacnew
+# A script for Arch Linux that ranks mirrors in mirrorlist.pacnew file and puts the resulting list in pacman's mirrorlist file.
 
 # Run only if root
 if [ "$(whoami)" != "root" ]
