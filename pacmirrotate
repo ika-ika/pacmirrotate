@@ -31,11 +31,9 @@ mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
 # Uncomment all servers in mirrorlist.pacnew
 echo -e "\e[1m\e[34m:: \e[39mUncommenting all servers in mirrorlist.pacnew"
 sed -i s/"#Server"/"Server"/ /etc/pacman.d/mirrorlist.pacnew
-sed -i '/^$/d' /etc/pacman.d/mirrorlist.pacnew # Remove empty lines in mirrorlist.pacnew (for accurate pv progress bar)
 
 # Calculate the number of lines in mirrorlist.pacnew
 LINES=$(wc -l /etc/pacman.d/mirrorlist.pacnew | cut -d\  -f 1)
-let LINES--
 
 # Rank mirrors in mirrorlist.pacnew, put results in mirrorlist
 echo -e "\e[1m\e[34m:: \e[39mRanking mirrors..."
