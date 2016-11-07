@@ -1,0 +1,50 @@
+#!/bin/bash
+# skrypt usuwa plik /etc/pacman.d/mirrorlist i generuje nowy z pliku /etc/pacman.d/mirrorlist.pacnew
+
+# Run only if root
+if [ "$(whoami)" != "root" ]
+then
+	echo -e "\e[1m\e[31m:: \e[39mThis script must be run as root."
+	exit 1
+fi
+
+# Check for /etc/pacman.d/mirrorlist.pacnew, abort script if not found
+if [[ ! -f /etc/pacman.d/mirrorlist.pacnew ]]
+then
+	echo -e "\e[1m\e[31m:: \e[39mmirrorlist.pacnew not found."
+	exit 1
+fi
+
+# Remove mirrorlist.old (old backup) if found
+if [[ -f /etc/pacman.d/mirrorlist.old ]]
+then
+	echo -e "\e[1m\e[34m:: \e[39mRemoving old backup"
+	rm /etc/pacman.d/mirrorlist.old
+else
+	echo -e "\e[1m\e[34m:: \e[39mOld backup not found, proceeding"
+fi
+
+# Backup mirrorlist
+echo -e "\e[1m\e[34m:: \e[39mBacking up old mirrorlist"
+mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.old
+
+# Uncomment all servers in mirrorlist.pacnew
+echo -e "\e[1m\e[34m:: \e[39mUncommenting all servers in mirrorlist.pacnew"
+sed -i s/"#Server"/"Server"/ /etc/pacman.d/mirrorlist.pacnew
+sed -i '/^$/d' /etc/pacman.d/mirrorlist.pacnew # Remove empty lines in mirrorlist.pacnew (for accurate pv progress bar)
+
+# Calculate the number of lines in mirrorlist.pacnew
+LINES=$(wc -l /etc/pacman.d/mirrorlist.pacnew | cut -d\  -f 1)
+let LINES--
+
+# Rank mirrors in mirrorlist.pacnew, put results in mirrorlist
+echo -e "\e[1m\e[34m:: \e[39mRanking mirrors..."
+rankmirrors -vn 5 /etc/pacman.d/mirrorlist.pacnew | pv -F ":: Time %t :: %e %p" -ls $LINES | cat > /etc/pacman.d/mirrorlist
+
+# Remove mirrorlist.pacnew
+echo -e "\e[1m\e[34m:: \e[39mRemoving mirrorlist.pacnew"
+rm /etc/pacman.d/mirrorlist.pacnew
+
+# End script
+echo -e "\e[1m\e[32m:: \e[39mAll done!"
+exit 0
