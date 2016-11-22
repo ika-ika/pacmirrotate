@@ -35,6 +35,7 @@ sed -i '/^$/d' /etc/pacman.d/mirrorlist.pacnew # Remove empty lines in mirrorlis
 
 # Calculate the number of lines in mirrorlist.pacnew
 LINES=$(wc -l /etc/pacman.d/mirrorlist.pacnew | cut -d\  -f 1)
+let LINES--
 
 # Rank mirrors in mirrorlist.pacnew, put results in mirrorlist
 echo -e "\e[1m\e[34m:: \e[39mRanking mirrors..."
